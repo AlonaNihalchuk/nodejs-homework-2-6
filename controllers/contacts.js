@@ -76,10 +76,10 @@ const updateContact = async (req, res, next) => {
 
 const updateStatusFavoriteContact = async (req, res, next) => {
   try {
-    const contact = await Contacts.updateContact(
-      req.params.contactId,
-      req.body
-    );
+    const { favorite } = req.body;
+    const contact = await Contacts.updateContact(req.params.contactId, {
+      favorite,
+    });
     if (contact) {
       return res
         .status(200)
