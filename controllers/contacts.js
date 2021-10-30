@@ -11,7 +11,8 @@ const getContacts = async (_req, res, next) => {
 
 const getContact = async (req, res, next) => {
   try {
-    const contact = await Contacts.updateContact(req.params.contactId);
+    // console.log(req.params);
+    const contact = await Contacts.getContactById(req.params.contactId);
     console.log(contact);
     console.log(contact.id);
     if (contact) {
@@ -19,9 +20,13 @@ const getContact = async (req, res, next) => {
         .status(200)
         .json({ status: "success", cod: 200, data: { contact } });
     }
+    // бесполезно!! тут 404 не срабатывает если цыфру в айди заменить на др. проваливается в app.js status(500),
+    // если цифру в айди удалить или добавить то validationErr,
+    // и 404 в app.js если изменить раут
+
     return res
       .status(404)
-      .json({ status: "error", cod: 404, message: "Not found" });
+      .json({ status: "error", cod: 404, message: "getContact Not found" });
   } catch (error) {
     next(error);
   }
@@ -47,9 +52,12 @@ const deleteContact = async (req, res, next) => {
         data: { contact },
       });
     }
+    // 404 срабатывает если цыфру в айди заменить на др.
+    // если цифру в айди удалить или добавить то validationErr,
+    // и 404 в app.js если изменить раут
     return res
       .status(404)
-      .json({ status: "error", cod: 404, message: "Not found" });
+      .json({ status: "error", cod: 404, message: "deleteContact Not found" });
   } catch (error) {
     next(error);
   }
@@ -66,6 +74,9 @@ const updateContact = async (req, res, next) => {
         .status(200)
         .json({ status: "success", cod: 200, data: { contact } });
     }
+    // 404 срабатывает если цыфру в айди заменить на др.
+    // если цифру в айди удалить или добавить то validationErr,
+    // и 404 в app.js если изменить раут
     return res
       .status(404)
       .json({ status: "error", cod: 404, message: "missing fields" });
@@ -85,9 +96,14 @@ const updateStatusFavoriteContact = async (req, res, next) => {
         .status(200)
         .json({ status: "success", cod: 200, data: { contact } });
     }
-    return res
-      .status(404)
-      .json({ status: "error", cod: 404, message: "Not Found" });
+    // 404 срабатывает если цыфру в айди заменить на др.
+    // если цифру в айди удалить или добавить то validationErr,
+    // и 404 в app.js если изменить раут
+    return res.status(404).json({
+      status: "error",
+      cod: 404,
+      message: "updateStatusFavoriteContact Not Found",
+    });
   } catch (error) {
     next(error);
   }
