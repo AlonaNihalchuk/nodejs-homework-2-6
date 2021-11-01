@@ -21,6 +21,7 @@ const userRegistration = async (req, res, next) => {
       id: newUser.id,
       email: newUser.email,
       subscription: newUser.subscription,
+      avatar: newUser.avatarURL,
     },
   });
 };
@@ -64,6 +65,12 @@ const updateUserSubscription = async (req, res, next) => {
   throw new CustomError(HttpCode.NOT_FOUND, "Not Found");
 };
 
+const uploadAvatar = async (req, res, next) => {
+  const picture = req.file;
+  console.log(picture);
+  res.status(HttpCode.OK).json({ picture });
+};
+
 const userLogout = async (req, res, next) => {
   const id = req.user._id;
   await Users.updateToken(id, null);
@@ -74,5 +81,6 @@ module.exports = {
   userRegistration,
   userLogin,
   updateUserSubscription,
+  uploadAvatar,
   userLogout,
 };
