@@ -1,5 +1,6 @@
 const Joi = require("joi");
 Joi.objectId = require("joi-objectid")(Joi);
+const { HttpCode } = require("../../config/constants");
 
 const patternTel = "^[- +()0-9]+$";
 const schema = Joi.object({
@@ -28,10 +29,11 @@ const validate = async (schema, obj, res, next) => {
     await schema.validateAsync(obj);
     next();
   } catch (err) {
-    res.status(400).json({
+    res.status(HttpCode.BAD_REQUEST).json({
       status: "error",
-      code: 400,
+      code: HttpCode.BAD_REQUEST,
       message: "missing required name field",
+      // message: `Field ${err.message.replace(/"/g, "")}`,
     });
   }
 };

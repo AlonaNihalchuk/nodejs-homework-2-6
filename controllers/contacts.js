@@ -1,96 +1,85 @@
-const Contacts = require("../repository/index");
+const Contacts = require("../repository/contacts");
+const CustomError = require("../helpers/customError");
+const { HttpCode } = require("../config/constants");
 
-const getContacts = async (_req, res, next) => {
-  try {
-    const contacts = await Contacts.listContacts();
-    res.json({ status: "success", cod: 200, data: { contacts } });
-  } catch (error) {
-    next(error);
-  }
+const getContacts = async (req, res, next) => {
+  // console.log(req.method);
+  console.log(req.query);
+
+  const userId = req.user._id;
+  const data = await Contacts.listContacts(userId, req.query);
+  res
+    .status(HttpCode.OK)
+    .json({ status: "success", cod: HttpCode.OK, data: { ...data } });
 };
 
 const getContact = async (req, res, next) => {
-  try {
-    const contact = await Contacts.updateContact(req.params.contactId);
-    console.log(contact);
-    console.log(contact.id);
-    if (contact) {
-      return res
-        .status(200)
-        .json({ status: "success", cod: 200, data: { contact } });
-    }
+  const userId = req.user._id;
+  const contact = await Contacts.getContactById(req.params.contactId, userId);
+  // console.log(req.params);
+  // console.log(contact);
+  // console.log(contact.id);
+
+  if (contact && contact !== null) {
     return res
-      .status(404)
-      .json({ status: "error", cod: 404, message: "Not found" });
-  } catch (error) {
-    next(error);
+      .status(HttpCode.OK)
+      .json({ status: "success", cod: HttpCode.OK, data: { contact } });
   }
+  throw new CustomError(HttpCode.NOT_FOUND, "Not found");
 };
 
 const createContact = async (req, res, next) => {
-  try {
-    const contact = await Contacts.addContact(req.body);
-    res.status(201).json({ status: "success", cod: 201, data: { contact } });
-  } catch (error) {
-    next(error);
-  }
+  const userId = req.user._id;
+  const contact = await Contacts.addContact({ ...req.body, owner: userId });
+  res
+    .status(HttpCode.CREATED)
+    .json({ status: "success", cod: HttpCode.CREATED, data: { contact } });
 };
 
 const deleteContact = async (req, res, next) => {
-  try {
-    const contact = await Contacts.removeContact(req.params.contactId);
-    if (contact) {
-      return res.status(200).json({
-        status: "success",
-        cod: 200,
-        message: "contact deleted",
-        data: { contact },
-      });
-    }
-    return res
-      .status(404)
-      .json({ status: "error", cod: 404, message: "Not found" });
-  } catch (error) {
-    next(error);
+  const userId = req.user._id;
+  const contact = await Contacts.removeContact(req.params.contactId, userId);
+  if (contact) {
+    return res.status(HttpCode.OK).json({
+      status: "success",
+      cod: HttpCode.OK,
+      message: "contact deleted",
+      data: { contact },
+    });
   }
+  throw new CustomError(HttpCode.NOT_FOUND, " Not found");
 };
 
 const updateContact = async (req, res, next) => {
-  try {
-    const contact = await Contacts.updateContact(
-      req.params.contactId,
-      req.body
-    );
-    if (contact) {
-      return res
-        .status(200)
-        .json({ status: "success", cod: 200, data: { contact } });
-    }
+  const userId = req.user._id;
+  const contact = await Contacts.updateContact(
+    req.params.contactId,
+    req.body,
+    userId
+  );
+  if (contact) {
     return res
-      .status(404)
-      .json({ status: "error", cod: 404, message: "missing fields" });
-  } catch (error) {
-    next(error);
+      .status(HttpCode.OK)
+      .json({ status: "success", cod: HttpCode.OK, data: { contact } });
   }
+
+  throw new CustomError(HttpCode.NOT_FOUND, " Not found");
 };
 
 const updateStatusFavoriteContact = async (req, res, next) => {
-  try {
-    const contact = await Contacts.updateContact(
-      req.params.contactId,
-      req.body
-    );
-    if (contact) {
-      return res
-        .status(200)
-        .json({ status: "success", cod: 200, data: { contact } });
-    }
+  const { favorite } = req.body;
+  const userId = req.user._id;
+  const contact = await Contacts.updateContact(
+    req.params.contactId,
+    { favorite },
+    userId
+  );
+  if (contact) {
     return res
-      .status(404)
-      .json({ status: "error", cod: 404, message: "Not Found" });
-  } catch (error) {
-    next(error);
+      .status(HttpCode.OK)
+      .json({ status: "success", cod: HttpCode.OK, data: { contact } });
   }
+  throw new CustomError(HttpCode.NOT_FOUND, "Not Found");
 };
 module.exports = {
   getContacts,
