@@ -85,7 +85,6 @@ const uploadAvatar = async (req, res, next) => {
     status: "success",
     cod: HttpCode.OK,
     data: {
-      // avatarUrl,
       avatarURL: avatarUrl,
     },
   });

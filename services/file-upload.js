@@ -7,7 +7,7 @@ class UploadFileAvatar {
     this.destination = destination;
   }
 
-  async transformAvatar(pathFile) {
+  async #transformAvatar(pathFile) {
     const pic = Jimp.read(pathFile);
     await (
       await pic
@@ -23,12 +23,9 @@ class UploadFileAvatar {
 
   async save(file, userId) {
     console.log(file);
-    await this.transformAvatar(file.path);
+    await this.#transformAvatar(file.path);
     await fs.rename(file.path, path.join(this.destination, file.filename));
     return path.normalize(path.join(userId, file.filename));
-    // const what = path.normalize(path.join(userId, file.filename));
-    // console.log(what);
-    // return what;
   }
 }
 module.exports = UploadFileAvatar;

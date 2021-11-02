@@ -4,11 +4,8 @@ const CustomError = require("./customError");
 const { HttpCode } = require("../config/constants");
 
 require("dotenv").config();
-// const UPLOAD_DIR = process.env.UPLOAD_DIR;
 
 const TMP_DIR = process.env.TMP_DIR;
-// const AVATARS_DIR = process.env.AVATARS_DIR;
-// const TMP_DIR = path.resolve("./tmp");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -17,8 +14,6 @@ const storage = multer.diskStorage({
   filename: function (req, file, cb) {
     const [, extension] = file.originalname.split(".");
     cb(null, `${uuidv4()}.${extension}`);
-
-    // cb(null, `${Date.now().toString()}_${extension}`);
   },
 });
 

@@ -9,10 +9,14 @@ const usersRouter = require("./routes/users/users");
 const RareLimits = require("./config/constants");
 const { HttpCode } = require("./config/constants");
 
+require("dotenv").config();
+const AVATARS_DIR = process.env.AVATARS_DIR;
+
 const app = express();
 
 const formatsLogger = app.get("env") === "development" ? "dev" : "short";
 
+app.use(express.static(AVATARS_DIR));
 app.use(helmet());
 app.use(logger(formatsLogger));
 app.use(cors());
