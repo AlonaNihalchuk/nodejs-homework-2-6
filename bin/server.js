@@ -1,11 +1,11 @@
+const mkdirp = require("mkdirp");
+
 const db = require("../config/db");
 const app = require("../app");
 
 require("dotenv").config();
 // const UPLOAD_DIR = process.env.UPLOAD_DIR;
 // const AVATAR_OF_USERS = process.env.AVATAR_OF_USERS;
-
-const mkdirp = require("mkdirp");
 
 const TMP_DIR = process.env.TMP_DIR;
 // const PUBLIC_DIR = process.env.PUBLIC_DIR;
