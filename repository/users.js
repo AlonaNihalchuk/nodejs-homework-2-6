@@ -13,6 +13,10 @@ const create = async ({ email, password, subscription }) => {
   return await user.save();
 };
 
+const updateAvatar = async (id, avatarUrl) => {
+  return await User.updateOne({ _id: id }, { avatarURL: avatarUrl });
+};
+
 const updateToken = async (id, token) => {
   return await User.updateOne({ _id: id }, { token });
 };
@@ -30,6 +34,7 @@ module.exports = {
   findById,
   findUserByEmail,
   create,
+  updateAvatar,
   updateToken,
   updateSubscription,
 };

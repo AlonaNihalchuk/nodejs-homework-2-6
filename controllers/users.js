@@ -1,7 +1,11 @@
 const jwt = require("jsonwebtoken");
+const path = require("path");
+const mkdirp = require("mkdirp");
+
 const Users = require("../repository/users");
 const { HttpCode } = require("../config/constants");
 const CustomError = require("../helpers/customError");
+const UploadFileAvatar = require("../services/file-upload");
 
 require("dotenv").config();
 const SECRET_KEY = process.env.JWT_SECRET_KEY;
@@ -21,6 +25,7 @@ const userRegistration = async (req, res, next) => {
       id: newUser.id,
       email: newUser.email,
       subscription: newUser.subscription,
+      avatar: newUser.avatarURL,
     },
   });
 };
@@ -64,6 +69,27 @@ const updateUserSubscription = async (req, res, next) => {
   throw new CustomError(HttpCode.NOT_FOUND, "Not Found");
 };
 
+const uploadAvatar = async (req, res, next) => {
+  const id = String(req.user._id);
+  const file = req.file;
+  console.log(file);
+  const AVATARS_DIR = process.env.AVATARS_DIR;
+  const destination = path.join(AVATARS_DIR, id);
+  await mkdirp(destination);
+  const uploadFileAvatar = new UploadFileAvatar(destination);
+  const avatarUrl = await uploadFileAvatar.save(file, id);
+  console.log(avatarUrl);
+  await Users.updateAvatar(id, avatarUrl);
+
+  return res.status(HttpCode.OK).json({
+    status: "success",
+    cod: HttpCode.OK,
+    data: {
+      avatarURL: avatarUrl,
+    },
+  });
+};
+
 const userLogout = async (req, res, next) => {
   const id = req.user._id;
   await Users.updateToken(id, null);
@@ -74,5 +100,6 @@ module.exports = {
   userRegistration,
   userLogin,
   updateUserSubscription,
+  uploadAvatar,
   userLogout,
 };

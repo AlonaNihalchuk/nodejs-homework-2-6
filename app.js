@@ -9,10 +9,14 @@ const usersRouter = require("./routes/users/users");
 const RareLimits = require("./config/constants");
 const { HttpCode } = require("./config/constants");
 
+require("dotenv").config();
+const AVATARS_DIR = process.env.AVATARS_DIR;
+
 const app = express();
 
 const formatsLogger = app.get("env") === "development" ? "dev" : "short";
 
+app.use(express.static(AVATARS_DIR));
 app.use(helmet());
 app.use(logger(formatsLogger));
 app.use(cors());
@@ -36,9 +40,10 @@ app.use((_req, res) => {
 });
 
 app.use((err, req, res, next) => {
-  res.status(HttpCode.INTERNAL_SERVER_ERROR).json({
-    status: "fail",
-    code: HttpCode.INTERNAL_SERVER_ERROR,
+  const statusCode = err.status || HttpCode.INTERNAL_SERVER_ERROR;
+  res.status(statusCode).json({
+    status: statusCode === HttpCode.INTERNAL_SERVER_ERROR ? "fail" : "error",
+    code: statusCode,
     message: err.message,
   });
 });
