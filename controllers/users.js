@@ -6,6 +6,11 @@ const Users = require("../repository/users");
 const { HttpCode } = require("../config/constants");
 const CustomError = require("../helpers/customError");
 const UploadFileAvatar = require("../services/file-upload");
+const EmailService = require("../services/email/service");
+const {
+  CreateSenderSendgrid,
+  // CreateSenderNodemailer,
+} = require("../services/email/sender");
 
 require("dotenv").config();
 const SECRET_KEY = process.env.JWT_SECRET_KEY;
@@ -17,7 +22,17 @@ const userRegistration = async (req, res, next) => {
     throw new CustomError(HttpCode.CONFLICT, "Email is already exist");
   }
 
+  // sent email to verify user
   const newUser = await Users.create({ email, password, subscription });
+  const emailService = new EmailService(
+    process.env.NODE_ENV,
+    new CreateSenderSendgrid()
+  );
+  const statusEmail = await emailService.sendVerifyEmail(
+    newUser.email,
+    newUser.name,
+    newUser.verifyToken
+  );
   return res.status(HttpCode.CREATED).json({
     status: "success",
     cod: HttpCode.CREATED,
@@ -26,6 +41,7 @@ const userRegistration = async (req, res, next) => {
       email: newUser.email,
       subscription: newUser.subscription,
       avatar: newUser.avatarURL,
+      successEmail: statusEmail,
     },
   });
 };
@@ -34,7 +50,7 @@ const userLogin = async (req, res, next) => {
   const user = await Users.findUserByEmail(email);
   console.log(user);
   const isValidPassword = await user.isValidPassword(password);
-  if (!user || !isValidPassword) {
+  if (!user || !isValidPassword || !user.verify) {
     throw new CustomError(HttpCode.UNAUTHORIZED, "Invalid credentials");
   }
 
@@ -96,10 +112,35 @@ const userLogout = async (req, res, next) => {
   res.status(HttpCode.NO_CONTENT).json({});
 };
 
+const verifyUser = async (req, res, next) => {
+  const user = await Users.findUserByVerifiedToken(req.params.token);
+  if (user) {
+    await Users.updateTokenVerify(user._id, true, null);
+    return res.status(HttpCode.OK).json({
+      status: "success",
+      cod: HttpCode.OK,
+      data: {
+        message: "Verification successful",
+      },
+    });
+  }
+  return res.status(HttpCode.UNAUTHORIZED).json({
+    status: "error",
+    cod: HttpCode.OK,
+    data: {
+      message: "User not found",
+    },
+  });
+};
+
+const repeatEmailToVerifyUser = async (req, res, next) => {};
+
 module.exports = {
   userRegistration,
   userLogin,
   updateUserSubscription,
   uploadAvatar,
   userLogout,
+  verifyUser,
+  repeatEmailToVerifyUser,
 };

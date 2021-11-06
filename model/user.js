@@ -1,6 +1,7 @@
 const { Schema, model } = require("mongoose");
 const bcrypt = require("bcryptjs");
 const gravatar = require("gravatar");
+const crypto = require("crypto");
 
 const { Status } = require("../config/constants");
 const SALT_FACTOR = 8;
@@ -19,6 +20,15 @@ const userSchema = new Schema(
         const re = /\S+@\S+.\S+/;
         return re.test(String(value).toLowerCase());
       },
+    },
+    verify: {
+      type: Boolean,
+      default: false,
+    },
+    verifyToken: {
+      type: String,
+      required: [true, "Verify token is required"],
+      default: crypto.randomUUID(),
     },
     subscription: {
       type: String,
