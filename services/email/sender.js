@@ -11,12 +11,12 @@ class CreateSenderSendgrid {
 class CreateSenderNodemailer {
   async send(msg) {
     const config = {
-      host: "smtp.meta.ua",
+      host: "smtp.rambler.ru",
       port: 465,
       secure: true,
       auth: {
-        //   my email
-        user: "goitnodejs@meta.ua",
+        //   ok?
+        user: "alonanihalchukdev@rambler.ru",
         pass: process.env.PASSWORD,
       },
     };
@@ -24,7 +24,7 @@ class CreateSenderNodemailer {
     return await transporter.sendMail({
       ...msg,
       //   my email
-      from: "goitnodejs@meta.ua",
+      from: "alonanihalchukdev@rambler.ru",
     });
   }
 }

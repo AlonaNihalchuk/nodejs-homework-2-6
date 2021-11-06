@@ -7,7 +7,7 @@ class EmailService {
       case "development":
         // from .env
         this.link =
-          " https://5040-2a01-117f-420a-8d00-d85-9700-d1e-8a7c.ngrok.io";
+          "https://04b9-2a01-117f-420a-8d00-d85-9700-d1e-8a7c.ngrok.io";
 
         break;
       case "production":
@@ -22,7 +22,7 @@ class EmailService {
     }
   }
 
-  createTemplateEmail(emailName, verifyToken) {
+  createTemplateEmail(email, verifyToken) {
     const mailGenerator = new Mailgen({
       theme: "neopolitan",
       product: {
@@ -30,9 +30,9 @@ class EmailService {
         link: this.link,
       },
     });
-    const email = {
+    const templateEmail = {
       body: {
-        emailName,
+        name: email,
         intro:
           "Welcome to Your contacts! We're very excited to have you on board.",
         action: {
@@ -45,7 +45,7 @@ class EmailService {
         },
       },
     };
-    return mailGenerator.generate(email);
+    return mailGenerator.generate(templateEmail);
   }
 
   async sendVerifyEmail(email, verifyToken) {

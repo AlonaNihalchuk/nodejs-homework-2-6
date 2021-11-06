@@ -9,7 +9,7 @@ const UploadFileAvatar = require("../services/file-upload");
 const EmailService = require("../services/email/service");
 const {
   CreateSenderSendgrid,
-  // CreateSenderNodemailer,
+  CreateSenderNodemailer,
 } = require("../services/email/sender");
 
 require("dotenv").config();
@@ -26,7 +26,7 @@ const userRegistration = async (req, res, next) => {
   const newUser = await Users.create({ email, password, subscription });
   const emailService = new EmailService(
     process.env.NODE_ENV,
-    new CreateSenderSendgrid()
+    new CreateSenderNodemailer()
   );
   const statusEmail = await emailService.sendVerifyEmail(
     newUser.email,
@@ -137,7 +137,60 @@ const verifyUser = async (req, res, next) => {
   });
 };
 
-// const repeatEmailToVerifyUser = async (req, res, next) => {};
+const repeatEmailToVerifyUser = async (req, res, next) => {
+  // const { email } = req.body;
+  // const user = await Users.findUserByEmail(email);
+  // if (user) {
+  //   const { email, verifyToken } = user;
+  //   const emailService = new EmailService(
+  //     process.env.NODE_ENV,
+  //     new CreateSenderNodemailer()
+  //   );
+  //   const statusEmail = await emailService.sendVerifyEmail(email, verifyToken);
+  // }
+  // return res.status(HttpCode.OK).json({
+  //   status: "success",
+  //   cod: HttpCode.OK,
+  //   data: {
+  //     message: "Verification successful",
+  //     data: {
+  //       successEmail: statusEmail,
+  //     },
+  //   },
+  // });
+  const { email } = req.body;
+  const user = await Users.findUserByEmail(email);
+  console.log(user);
+  if (user) {
+    const { email, verifyToken } = user;
+    const emailService = new EmailService(
+      process.env.NODE_ENV,
+      new CreateSenderSendgrid()
+    );
+    // tut
+    console.log(email);
+    console.log(verifyToken);
+    const statusEmail = await emailService.sendVerifyEmail(email, verifyToken);
+    return res.status(HttpCode.CREATED).json({
+      status: "success",
+      cod: HttpCode.CREATED,
+      data: {
+        // id: newUser.id,
+        // email: newUser.email,
+        // subscription: newUser.subscription,
+        // avatar: newUser.avatarURL,
+        successEmail: statusEmail,
+      },
+    });
+  }
+  return res.status(HttpCode.BAD_REQUEST).json({
+    status: "success",
+    code: HttpCode.BAD_REQUEST,
+    data: {
+      message: "BAD REQUEST",
+    },
+  });
+};
 
 module.exports = {
   userRegistration,
@@ -146,5 +199,5 @@ module.exports = {
   uploadAvatar,
   userLogout,
   verifyUser,
-  // repeatEmailToVerifyUser,
+  repeatEmailToVerifyUser,
 };
