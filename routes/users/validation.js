@@ -18,6 +18,15 @@ const schemaSubscriptionUser = Joi.object({
   subscription: Joi.string().valid("starter", "pro", "business").required(),
 });
 
+const schemaVerifyUser = Joi.object({
+  email: Joi.string()
+    .email({
+      minDomainSegments: 2,
+      tlds: { allow: ["com", "net", "ua", "ru", "pl"] },
+    })
+    .required(),
+});
+
 const validate = async (schema, obj, res, next) => {
   try {
     await schema.validateAsync(obj);
@@ -38,4 +47,8 @@ module.exports.validateUser = async (req, res, next) => {
 
 module.exports.validateSubscriptionUser = async (req, res, next) => {
   return await validate(schemaSubscriptionUser, req.body, res, next);
+};
+
+module.exports.validateVerifyUser = async (req, res, next) => {
+  return await validate(schemaVerifyUser, req.body, res, next);
 };

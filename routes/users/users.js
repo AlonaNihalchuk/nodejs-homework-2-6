@@ -9,7 +9,11 @@ const {
   verifyUser,
   repeatEmailToVerifyUser,
 } = require("../../controllers/users");
-const { validateUser, validateSubscriptionUser } = require("./validation");
+const {
+  validateUser,
+  validateSubscriptionUser,
+  validateVerifyUser,
+} = require("./validation");
 const guard = require("../../helpers/guard");
 const limitLogin = require("../../helpers/rate-limit-login");
 const wrapError = require("../../helpers/errorhendler");
@@ -38,6 +42,6 @@ router.patch(
 );
 router.patch("/avatars", guard, upload.single("avatar"), uploadAvatar);
 router.get("/verify/:verificationToken", wrapError(verifyUser));
-router.post("/verify", repeatEmailToVerifyUser);
+router.post("/verify", validateVerifyUser, wrapError(repeatEmailToVerifyUser));
 
 module.exports = router;

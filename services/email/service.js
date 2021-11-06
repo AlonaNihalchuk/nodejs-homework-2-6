@@ -1,23 +1,20 @@
 const Mailgen = require("mailgen");
+require("dotenv").config();
 
 class EmailService {
   constructor(env, sender) {
     this.sender = sender;
     switch (env) {
       case "development":
-        // from .env
-        this.link =
-          "https://04b9-2a01-117f-420a-8d00-d85-9700-d1e-8a7c.ngrok.io";
+        this.link = process.env.HTTP_NGROK;
 
         break;
       case "production":
-        // from .env
         this.link = "link for production";
         break;
 
       default:
-        // from .env
-        this.link = "http://127.0.0.1:3000";
+        this.link = process.env.HTTP_DEFAULT;
         break;
     }
   }
