@@ -30,7 +30,6 @@ const userRegistration = async (req, res, next) => {
   );
   const statusEmail = await emailService.sendVerifyEmail(
     newUser.email,
-    newUser.name,
     newUser.verifyToken
   );
   return res.status(HttpCode.CREATED).json({
@@ -113,7 +112,12 @@ const userLogout = async (req, res, next) => {
 };
 
 const verifyUser = async (req, res, next) => {
-  const user = await Users.findUserByVerifiedToken(req.params.token);
+  console.log(req.params);
+
+  const user = await Users.findUserByVerifiedToken(
+    req.params.verificationToken
+  );
+  console.log(user);
   if (user) {
     await Users.updateTokenVerify(user._id, true, null);
     return res.status(HttpCode.OK).json({
@@ -126,14 +130,14 @@ const verifyUser = async (req, res, next) => {
   }
   return res.status(HttpCode.UNAUTHORIZED).json({
     status: "error",
-    cod: HttpCode.OK,
+    cod: HttpCode.UNAUTHORIZED,
     data: {
       message: "User not found",
     },
   });
 };
 
-const repeatEmailToVerifyUser = async (req, res, next) => {};
+// const repeatEmailToVerifyUser = async (req, res, next) => {};
 
 module.exports = {
   userRegistration,
@@ -142,5 +146,5 @@ module.exports = {
   uploadAvatar,
   userLogout,
   verifyUser,
-  repeatEmailToVerifyUser,
+  // repeatEmailToVerifyUser,
 };

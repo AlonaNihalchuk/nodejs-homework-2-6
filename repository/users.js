@@ -26,8 +26,8 @@ const updateToken = async (id, token) => {
 };
 
 const updateTokenVerify = async (id, verify, verifyToken) => {
-  console.log(verify);
-  console.log(verifyToken);
+  console.log(typeof verify);
+  console.log(typeof verifyToken);
   // see
   const updateUser = await User.updateOne({ _id: id }, { verify, verifyToken });
   console.log(updateUser);

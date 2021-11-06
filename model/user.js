@@ -21,15 +21,6 @@ const userSchema = new Schema(
         return re.test(String(value).toLowerCase());
       },
     },
-    verify: {
-      type: Boolean,
-      default: false,
-    },
-    verifyToken: {
-      type: String,
-      required: [true, "Verify token is required"],
-      default: crypto.randomUUID(),
-    },
     subscription: {
       type: String,
       enum: [Status.STARTER, Status.PRO, Status.BUSINESS],
@@ -44,6 +35,15 @@ const userSchema = new Schema(
       default: function () {
         return gravatar.url(this.email, { s: "250" }, true);
       },
+    },
+    verify: {
+      type: Boolean,
+      default: false,
+    },
+    verifyToken: {
+      type: String,
+      required: [true, "Verify token is required"],
+      default: crypto.randomUUID(),
     },
   },
   {
